@@ -48,7 +48,7 @@ class SurveyController extends Controller
     public function show(Survey $survey): View
     {
         $survey->load(['questions', 'responses' => function ($query) {
-            $query->completed()->latest()->limit(10);
+            $query->latest()->limit(10); // Show all responses, not just completed
         }]);
 
         return view('admin.surveys.show', compact('survey'));
@@ -91,8 +91,8 @@ class SurveyController extends Controller
 
     public function responses(Survey $survey): View
     {
+        // Show ALL responses (both completed and incomplete)
         $responses = $survey->responses()
-            ->completed()
             ->latest()
             ->paginate(20);
 

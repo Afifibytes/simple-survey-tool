@@ -46,29 +46,46 @@ class ResponseController extends Controller
 
         $sessionId = session()->getId();
 
-        $response = Response::updateOrCreate(
-            [
+        $response = Response::where('id', $request->response_id)
+            ->where('survey_id', $survey->id)
+            ->where('session_id', $sessionId)
+            ->first();
+
+        if ($response) {
+            $response->update($request->validated());
+        } else {
+            // Response not found or doesn't belong to this session, create new one
+            $response = Response::create((array_merge([
                 'survey_id' => $survey->id,
                 'session_id' => $sessionId,
-                'completed_at' => now(),
-            ],
-            $request->validated()
-        );
+            ], $request->validated())));
+        }
 
         // Generate AI follow-up question if open text is provided
         if ($request->open_text && !$response->ai_follow_up_question) {
             $this->generateAiFollowUp($response, $request->open_text);
+            $response->refresh();
         }
 
-        return response()->json([
+        // Mark as completed if no AI follow-up question was generated
+        if (!$response->ai_follow_up_question) {
+            $response->update(['completed_at' => now()]);
+        }
+
+        $jsonResponse = [
             'success' => true,
             'response' => $response,
+            'response_id' => $response->id,
             'has_follow_up' => !is_null($response->ai_follow_up_question),
-        ]);
+        ];
+
+
+        return response()->json($jsonResponse);
     }
 
     public function storeFollowUp(Request $request, Survey $survey): JsonResponse
     {
+
         // Check if survey is active
         if (!$survey->is_active) {
             return response()->json([
@@ -78,17 +95,20 @@ class ResponseController extends Controller
         }
 
         $request->validate([
+            'response_id' => 'nullable|integer|exists:responses,id',
             'ai_follow_up_answer' => 'required|string|max:1000',
         ]);
 
         $sessionId = session()->getId();
 
-        $response = Response::where('survey_id', $survey->id)
+        $response = Response::where('id', $request->response_id)
+            ->where('survey_id', $survey->id)
             ->where('session_id', $sessionId)
-            ->firstOrFail();
+            ->first();
 
         $response->update([
             'ai_follow_up_answer' => $request->ai_follow_up_answer,
+            'completed_at' => now(),
         ]);
 
         return response()->json([

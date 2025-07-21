@@ -38,7 +38,7 @@ app/
 │   ├── Question.php                 # Question model
 │   └── Response.php                 # Response model
 └── Services/
-    └── AIQuestionGeneratorService.php # OpenAI integration
+    └── AIQuestionGeneratorService.php # Gemini integration
 ```
 
 ### Frontend Structure
@@ -126,15 +126,16 @@ REDIS_HOST=redis
 CACHE_STORE=redis
 SESSION_DRIVER=redis
 
-# OpenAI Integration
-OPENAI_API_KEY=your_api_key_here
-OPENAI_API_URL=https://api.openai.com/v1
-OPENAI_TIMEOUT=30
+# Gemini Integration
+GEMINI_API_KEY=your_api_key_here
+GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta
+GEMINI_MODEL=gemini-2.0-flash-exp
+GEMINI_TIMEOUT=30
 ```
 
 ### AI Features
-- Set `OPENAI_API_KEY` to enable AI follow-up questions
-- AI questions are generated based on open text responses
+- Set `GEMINI_API_KEY` to enable AI follow-up questions
+- AI questions are generated based on open text responses using Google's Gemini 2.0 Flash
 - Graceful fallback when AI service is unavailable
 
 ## 🧪 Testing

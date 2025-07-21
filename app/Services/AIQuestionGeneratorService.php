@@ -10,13 +10,15 @@ class AIQuestionGeneratorService
 {
     private ?string $apiKey;
     private string $apiUrl;
+    private string $model;
     private int $timeout;
 
     public function __construct()
     {
-        $this->apiKey = config('services.openai.api_key');
-        $this->apiUrl = config('services.openai.api_url', 'https://api.openai.com/v1');
-        $this->timeout = config('services.openai.timeout', 30);
+        $this->apiKey = config('services.gemini.api_key');
+        $this->apiUrl = config('services.gemini.api_url', 'https://generativelanguage.googleapis.com/v1beta');
+        $this->model = config('services.gemini.model', 'gemini-2.0-flash-exp');
+        $this->timeout = config('services.gemini.timeout', 30);
     }
 
     public function generateFollowUpQuestion(string $originalQuestion, string $response): ?string
@@ -29,7 +31,7 @@ class AIQuestionGeneratorService
 
         try {
             $prompt = $this->buildPrompt($originalQuestion, $response);
-            $followUpQuestion = $this->callOpenAI($prompt);
+            $followUpQuestion = $this->callGemini($prompt);
 
             if ($followUpQuestion && $this->validateQuestion($followUpQuestion)) {
                 // Cache successful results
@@ -67,36 +69,39 @@ Guidelines:
 Follow-up Question:";
     }
 
-    private function callOpenAI(string $prompt): ?string
+    private function callGemini(string $prompt): ?string
     {
         if (!$this->apiKey) {
-            Log::warning('OpenAI API key not configured');
+            Log::warning('Gemini API key not configured');
             return null;
         }
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $this->apiKey,
             'Content-Type' => 'application/json',
         ])
         ->timeout($this->timeout)
-        ->post($this->apiUrl . '/chat/completions', [
-            'model' => 'gpt-3.5-turbo',
-            'messages' => [
+        ->post($this->apiUrl . '/models/' . $this->model . ':generateContent?key=' . $this->apiKey, [
+            'contents' => [
                 [
-                    'role' => 'user',
-                    'content' => $prompt,
-                ],
+                    'parts' => [
+                        [
+                            'text' => $prompt
+                        ]
+                    ]
+                ]
             ],
-            'max_tokens' => 100,
-            'temperature' => 0.7,
+            'generationConfig' => [
+                'temperature' => 0.7,
+                'maxOutputTokens' => 100,
+            ]
         ]);
 
         if ($response->successful()) {
             $data = $response->json();
-            return trim($data['choices'][0]['message']['content'] ?? '');
+            return trim($data['candidates'][0]['content']['parts'][0]['text'] ?? '');
         }
 
-        throw new \Exception('OpenAI API call failed: ' . $response->body());
+        throw new \Exception('Gemini API call failed: ' . $response->body());
     }
 
     private function validateQuestion(string $question): bool

@@ -17,7 +17,7 @@
 </head>
 <body>
     <h1>Frontend API Test - AI Resilience</h1>
-    
+
     <div class="test-section info">
         <h3>Test Instructions</h3>
         <ol>
@@ -73,7 +73,7 @@
 
         async function testApiCall(data, testName) {
             log(`Starting ${testName}...`, 'info');
-            
+
             try {
                 const csrfToken = await getCsrfToken();
                 if (!csrfToken) {
@@ -89,7 +89,7 @@
                 });
 
                 log(`Making API call to /survey/${surveyId}/response`, 'info');
-                
+
                 const response = await fetch(`/survey/${surveyId}/response`, {
                     method: 'POST',
                     body: formData,
@@ -98,7 +98,7 @@
                     }
                 });
 
-                log(`HTTP Status: ${response.status} ${response.statusText}`, 
+                log(`HTTP Status: ${response.status} ${response.statusText}`,
                     response.ok ? 'success' : 'error');
 
                 if (!response.ok) {
@@ -137,8 +137,8 @@
 
         async function testWithoutAI() {
             log('=== Testing WITHOUT AI Key ===', 'info');
-            log('Note: Remove OPENAI_API_KEY from .env file for this test', 'info');
-            
+            log('Note: Remove GEMINI_API_KEY from .env file for this test', 'info');
+
             await testApiCall({
                 open_text: 'This is a test response without AI key'
             }, 'Without AI Key');
@@ -146,8 +146,8 @@
 
         async function testWithAI() {
             log('=== Testing WITH AI Key ===', 'info');
-            log('Note: Ensure OPENAI_API_KEY is set in .env file for this test', 'info');
-            
+            log('Note: Ensure GEMINI_API_KEY is set in .env file for this test', 'info');
+
             await testApiCall({
                 open_text: 'This is a test response with AI key'
             }, 'With AI Key');
@@ -155,7 +155,7 @@
 
         async function testNPSOnly() {
             log('=== Testing NPS Only (No AI) ===', 'info');
-            
+
             await testApiCall({
                 nps_score: 8
             }, 'NPS Only');

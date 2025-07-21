@@ -35,10 +35,11 @@ return [
         ],
     ],
 
-    'openai' => [
-        'api_key' => env('OPENAI_API_KEY'),
-        'api_url' => env('OPENAI_API_URL', 'https://api.openai.com/v1'),
-        'timeout' => env('OPENAI_TIMEOUT', 30),
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+        'api_url' => env('GEMINI_API_URL', 'https://generativelanguage.googleapis.com/v1beta'),
+        'model' => env('GEMINI_MODEL', 'gemini-2.0-flash-exp'),
+        'timeout' => env('GEMINI_TIMEOUT', 30),
     ],
 
 ];

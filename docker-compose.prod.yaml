@@ -28,9 +28,10 @@ services:
       - CACHE_STORE=redis
       - SESSION_DRIVER=redis
       - QUEUE_CONNECTION=redis
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_API_URL=${OPENAI_API_URL:-https://api.openai.com/v1}
-      - OPENAI_TIMEOUT=${OPENAI_TIMEOUT:-30}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_API_URL=${GEMINI_API_URL:-https://generativelanguage.googleapis.com/v1beta}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.0-flash-exp}
+      - GEMINI_TIMEOUT=${GEMINI_TIMEOUT:-30}
     networks:
       - survey_network_prod
     depends_on:

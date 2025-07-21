@@ -48,7 +48,7 @@ The integration tests cover:
 - Session-based response tracking
 
 ✅ **AI Integration Flow**
-- OpenAI API interaction and prompt engineering
+- Gemini API interaction and prompt engineering
 - Caching behavior and performance optimization
 - Error handling and graceful degradation
 - Service timeout and failure scenarios

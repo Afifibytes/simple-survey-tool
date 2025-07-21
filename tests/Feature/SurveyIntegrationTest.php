@@ -20,9 +20,10 @@ class SurveyIntegrationTest extends TestCase
         parent::setUp();
 
         // Set up test configuration for AI service
-        config(['services.openai.api_key' => 'test-api-key']);
-        config(['services.openai.api_url' => 'https://api.openai.com/v1']);
-        config(['services.openai.timeout' => 30]);
+        config(['services.gemini.api_key' => 'test-api-key']);
+        config(['services.gemini.api_url' => 'https://generativelanguage.googleapis.com/v1beta']);
+        config(['services.gemini.model' => 'gemini-2.0-flash-exp']);
+        config(['services.gemini.timeout' => 30]);
     }
 
     public function test_complete_survey_creation_flow()
@@ -179,11 +180,15 @@ class SurveyIntegrationTest extends TestCase
 
         // Mock AI service response
         Http::fake([
-            'api.openai.com/*' => Http::response([
-                'choices' => [
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
                     [
-                        'message' => [
-                            'content' => 'What specific improvements would you suggest?'
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => 'What specific improvements would you suggest?'
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -225,11 +230,15 @@ class SurveyIntegrationTest extends TestCase
 
         // Mock AI service response
         Http::fake([
-            'api.openai.com/*' => Http::response([
-                'choices' => [
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
                     [
-                        'message' => [
-                            'content' => 'What specific improvements would help most?'
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => 'What specific improvements would help most?'
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -254,21 +263,22 @@ class SurveyIntegrationTest extends TestCase
         $this->assertNotNull($storedResponse);
         $this->assertEquals('The service is good but could be faster', $storedResponse->open_text);
         $this->assertEquals('What specific improvements would help most?', $storedResponse->ai_follow_up_question);
-        $this->assertNull($storedResponse->completed_at); // Not completed yet
+        $this->assertNull($storedResponse->completed_at); // Response is NOT completed yet - waiting for AI follow-up answer
 
         // Test that AI service was called with correct parameters
         Http::assertSent(function ($request) {
             $body = json_decode($request->body(), true);
-            return $body['model'] === 'gpt-3.5-turbo' &&
-                   $body['max_tokens'] === 100 &&
-                   $body['temperature'] === 0.7;
+            return isset($body['contents']) &&
+                   isset($body['generationConfig']) &&
+                   $body['generationConfig']['temperature'] === 0.7 &&
+                   $body['generationConfig']['maxOutputTokens'] === 100;
         });
     }
 
     public function test_response_submission_without_ai_service()
     {
         // Disable AI service by removing API key
-        config(['services.openai.api_key' => null]);
+        config(['services.gemini.api_key' => null]);
 
         $survey = Survey::create(['name' => 'Test Survey']);
 

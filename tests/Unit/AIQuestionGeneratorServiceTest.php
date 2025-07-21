@@ -18,22 +18,27 @@ class AIQuestionGeneratorServiceTest extends TestCase
         parent::setUp();
 
         // Set up test configuration
-        Config::set('services.openai.api_key', 'test-api-key');
-        Config::set('services.openai.api_url', 'https://api.openai.com/v1');
-        Config::set('services.openai.timeout', 30);
+        Config::set('services.gemini.api_key', 'test-api-key');
+        Config::set('services.gemini.api_url', 'https://generativelanguage.googleapis.com/v1beta');
+        Config::set('services.gemini.model', 'gemini-2.0-flash-exp');
+        Config::set('services.gemini.timeout', 30);
 
         $this->service = new AIQuestionGeneratorService();
     }
 
     public function test_generates_follow_up_question_successfully()
     {
-        // Mock successful OpenAI API response
+        // Mock successful Gemini API response
         Http::fake([
-            'api.openai.com/*' => Http::response([
-                'choices' => [
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
                     [
-                        'message' => [
-                            'content' => 'What specific features would you like to see improved?'
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => 'What specific features would you like to see improved?'
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -68,11 +73,15 @@ class AIQuestionGeneratorServiceTest extends TestCase
     public function test_caches_successful_results()
     {
         Http::fake([
-            'api.openai.com/*' => Http::response([
-                'choices' => [
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
                     [
-                        'message' => [
-                            'content' => 'What specific features would you like to see improved?'
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => 'What specific features would you like to see improved?'
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -93,12 +102,12 @@ class AIQuestionGeneratorServiceTest extends TestCase
 
     public function test_returns_null_when_api_key_not_configured()
     {
-        Config::set('services.openai.api_key', null);
+        Config::set('services.gemini.api_key', null);
         $service = new AIQuestionGeneratorService();
 
         Log::shouldReceive('warning')
             ->once()
-            ->with('OpenAI API key not configured');
+            ->with('Gemini API key not configured');
 
         Cache::shouldReceive('get')->once()->andReturn(null);
 
@@ -110,7 +119,7 @@ class AIQuestionGeneratorServiceTest extends TestCase
     public function test_handles_api_failure_gracefully()
     {
         Http::fake([
-            'api.openai.com/*' => Http::response(['error' => 'API Error'], 500)
+            'generativelanguage.googleapis.com/*' => Http::response(['error' => 'API Error'], 500)
         ]);
 
         Cache::shouldReceive('get')->once()->andReturn(null);
@@ -126,11 +135,15 @@ class AIQuestionGeneratorServiceTest extends TestCase
     public function test_validates_valid_generated_questions()
     {
         Http::fake([
-            'api.openai.com/*' => Http::response([
-                'choices' => [
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
                     [
-                        'message' => [
-                            'content' => 'What specific features would you like to see improved?'
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => 'What specific features would you like to see improved?'
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -147,11 +160,15 @@ class AIQuestionGeneratorServiceTest extends TestCase
     public function test_rejects_invalid_generated_questions()
     {
         Http::fake([
-            'api.openai.com/*' => Http::response([
-                'choices' => [
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
                     [
-                        'message' => [
-                            'content' => 'This is not a question'
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => 'This is not a question'
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -170,11 +187,15 @@ class AIQuestionGeneratorServiceTest extends TestCase
         $response = "Very satisfied";
 
         Http::fake([
-            'api.openai.com/*' => Http::response([
-                'choices' => [
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
                     [
-                        'message' => [
-                            'content' => 'What made you most satisfied?'
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => 'What made you most satisfied?'
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -188,7 +209,7 @@ class AIQuestionGeneratorServiceTest extends TestCase
 
         Http::assertSent(function ($request) use ($originalQuestion, $response) {
             $body = json_decode($request->body(), true);
-            $prompt = $body['messages'][0]['content'];
+            $prompt = $body['contents'][0]['parts'][0]['text'];
 
             return str_contains($prompt, $originalQuestion) &&
                    str_contains($prompt, $response) &&
@@ -196,14 +217,18 @@ class AIQuestionGeneratorServiceTest extends TestCase
         });
     }
 
-    public function test_uses_correct_openai_parameters()
+    public function test_uses_correct_gemini_parameters()
     {
         Http::fake([
-            'api.openai.com/*' => Http::response([
-                'choices' => [
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
                     [
-                        'message' => [
-                            'content' => 'What made you most satisfied?'
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => 'What made you most satisfied?'
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -218,12 +243,12 @@ class AIQuestionGeneratorServiceTest extends TestCase
         Http::assertSent(function ($request) {
             $body = json_decode($request->body(), true);
 
-            return $body['model'] === 'gpt-3.5-turbo' &&
-                   $body['max_tokens'] === 100 &&
-                   $body['temperature'] === 0.7 &&
-                   isset($body['messages']) &&
-                   count($body['messages']) === 1 &&
-                   $body['messages'][0]['role'] === 'user';
+            return isset($body['contents']) &&
+                   isset($body['generationConfig']) &&
+                   $body['generationConfig']['temperature'] === 0.7 &&
+                   $body['generationConfig']['maxOutputTokens'] === 100 &&
+                   count($body['contents']) === 1 &&
+                   isset($body['contents'][0]['parts'][0]['text']);
         });
     }
 

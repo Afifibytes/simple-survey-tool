@@ -32,7 +32,22 @@ class Survey extends Model
 
     public function getResponseCountAttribute(): int
     {
+        return $this->responses()->count(); // Count all responses, not just completed
+    }
+
+    public function getCompletedResponseCountAttribute(): int
+    {
         return $this->responses()->whereNotNull('completed_at')->count();
+    }
+
+    public function getCompletionRateAttribute(): float
+    {
+        $total = $this->responses()->count();
+        if ($total === 0) {
+            return 0;
+        }
+        $completed = $this->responses()->whereNotNull('completed_at')->count();
+        return ($completed / $total) * 100;
     }
 
     public function getAverageNpsScoreAttribute(): ?float

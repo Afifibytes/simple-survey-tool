@@ -39,7 +39,7 @@ class SurveySubmissionResilienceTest extends TestCase
     {
         // Mock AI service failure (service unavailable)
         Http::fake([
-            'api.openai.com/*' => Http::response(['error' => 'Service Unavailable'], 503)
+            'generativelanguage.googleapis.com/*' => Http::response(['error' => 'Service Unavailable'], 503)
         ]);
 
         Log::shouldReceive('error')->once()->with(
@@ -77,7 +77,7 @@ class SurveySubmissionResilienceTest extends TestCase
     {
         // Mock AI service timeout
         Http::fake([
-            'api.openai.com/*' => function () {
+            'generativelanguage.googleapis.com/*' => function () {
                 throw new \Illuminate\Http\Client\ConnectionException('Connection timeout after 30 seconds');
             }
         ]);
@@ -110,9 +110,9 @@ class SurveySubmissionResilienceTest extends TestCase
     public function test_survey_submission_succeeds_when_ai_api_key_is_missing()
     {
         // Remove AI API key to simulate misconfiguration
-        Config::set('services.openai.api_key', null);
+        Config::set('services.gemini.api_key', null);
 
-        Log::shouldReceive('warning')->once()->with('OpenAI API key not configured');
+        Log::shouldReceive('warning')->once()->with('Gemini API key not configured');
 
         $responseData = [
             'open_text' => 'The interface is intuitive but could use more features.'
@@ -138,11 +138,15 @@ class SurveySubmissionResilienceTest extends TestCase
     {
         // Mock AI service returning invalid/malformed response
         Http::fake([
-            'api.openai.com/*' => Http::response([
-                'choices' => [
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
                     [
-                        'message' => [
-                            'content' => '' // Empty content
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => '' // Empty content
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -174,11 +178,15 @@ class SurveySubmissionResilienceTest extends TestCase
     {
         // Mock AI service returning response that fails validation (no question mark)
         Http::fake([
-            'api.openai.com/*' => Http::response([
-                'choices' => [
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
                     [
-                        'message' => [
-                            'content' => 'This is not a proper question format'
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => 'This is not a proper question format'
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -234,18 +242,18 @@ class SurveySubmissionResilienceTest extends TestCase
         // Test multiple failure scenarios in sequence
         $testCases = [
             [
-                'mock' => fn() => Http::fake(['api.openai.com/*' => Http::response([], 500)]),
+                'mock' => fn() => Http::fake(['generativelanguage.googleapis.com/*' => Http::response([], 500)]),
                 'data' => ['open_text' => 'First response with AI failure'],
                 'expected_text' => 'First response with AI failure'
             ],
             [
-                'mock' => fn() => Config::set('services.openai.api_key', ''),
+                'mock' => fn() => Config::set('services.gemini.api_key', ''),
                 'data' => ['open_text' => 'Second response without API key'],
                 'expected_text' => 'Second response without API key'
             ],
             [
                 'mock' => fn() => Http::fake([
-                    'api.openai.com/*' => fn() => throw new \Exception('Network error')
+                    'generativelanguage.googleapis.com/*' => fn() => throw new \Exception('Network error')
                 ]),
                 'data' => ['nps_score' => 7, 'open_text' => 'Third response with network error'],
                 'expected_text' => 'Third response with network error'
@@ -281,11 +289,15 @@ class SurveySubmissionResilienceTest extends TestCase
     {
         // Verify that when AI service works, it still generates follow-up questions
         Http::fake([
-            'api.openai.com/*' => Http::response([
-                'choices' => [
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
                     [
-                        'message' => [
-                            'content' => 'What specific improvements would you suggest?'
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => 'What specific improvements would you suggest?'
+                                ]
+                            ]
                         ]
                     ]
                 ]

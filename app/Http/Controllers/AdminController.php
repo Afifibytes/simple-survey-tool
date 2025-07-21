@@ -12,17 +12,22 @@ class AdminController extends Controller
     {
         $totalSurveys = Survey::count();
         $activeSurveys = Survey::active()->count();
-        $totalResponses = Response::completed()->count();
+        $totalResponses = Response::count(); // Show all responses, not just completed
+        $completedResponses = Response::completed()->count();
+        $completionRate = $totalResponses > 0 ? ($completedResponses / $totalResponses) * 100 : 0;
+
         $recentSurveys = Survey::with('questions')
-            ->withCount('responses')
+            ->withCount('responses') // This will count all responses
             ->latest()
             ->limit(5)
             ->get();
 
         return view('admin.dashboard', compact(
             'totalSurveys',
-            'activeSurveys', 
+            'activeSurveys',
             'totalResponses',
+            'completedResponses',
+            'completionRate',
             'recentSurveys'
         ));
     }

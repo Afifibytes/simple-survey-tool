@@ -14,6 +14,7 @@ class StoreResponseRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'response_id' => 'nullable|integer|exists:responses,id',
             'nps_score' => 'nullable|integer|min:0|max:10',
             'open_text' => 'nullable|string|max:1000',
         ];

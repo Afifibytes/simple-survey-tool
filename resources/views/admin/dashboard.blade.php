@@ -49,6 +49,7 @@
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600">Total Responses</p>
                 <p class="text-2xl font-bold text-gray-900">{{ $totalResponses }}</p>
+                <p class="text-xs text-gray-500">{{ $completedResponses }} completed ({{ number_format($completionRate, 1) }}%)</p>
             </div>
         </div>
     </div>

@@ -48,6 +48,7 @@
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600">Total Responses</p>
                 <p class="text-2xl font-bold text-gray-900">{{ $survey->response_count }}</p>
+                <p class="text-xs text-gray-500">{{ $survey->completed_response_count }} completed ({{ number_format($survey->completion_rate, 1) }}%)</p>
             </div>
         </div>
     </div>

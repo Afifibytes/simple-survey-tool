@@ -26,7 +26,8 @@
             </div>
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600">Total Responses</p>
-                <p class="text-2xl font-bold text-gray-900">{{ $responses->total() }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ $survey->response_count }}</p>
+                <p class="text-xs text-gray-500">{{ $survey->completed_response_count }} completed, {{ $survey->response_count - $survey->completed_response_count }} incomplete</p>
             </div>
         </div>
     </div>
@@ -71,7 +72,7 @@
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600">Completion Rate</p>
                 <p class="text-2xl font-bold text-gray-900">
-                    {{ $responses->total() > 0 ? number_format(($survey->responses()->completed()->count() / $responses->total()) * 100, 1) : 0 }}%
+                    {{ number_format($survey->completion_rate, 1) }}%
                 </p>
             </div>
         </div>
