@@ -285,7 +285,7 @@ docker-compose -f docker-compose.prod.yaml logs app
            value: false
          - key: APP_KEY
            generateValue: true
-         - key: OPENAI_API_KEY
+         - key: GEMINI_API_KEY
            sync: false
    ```
 
@@ -353,7 +353,7 @@ docker-compose -f docker-compose.prod.yaml logs app
 4. **Deploy:**
    ```bash
    fly deploy
-   fly secrets set OPENAI_API_KEY=your_key_here
+   fly secrets set GEMINI_API_KEY=your_key_here
    fly ssh console -C "php artisan migrate --force"
    ```
 
@@ -364,7 +364,7 @@ docker-compose -f docker-compose.prod.yaml logs app
 2. **Configure Environment Variables:**
    - `APP_ENV=production`
    - `APP_DEBUG=false`
-   - `OPENAI_API_KEY=your_key`
+   - `GEMINI_API_KEY=your_key`
    - Database and Redis URLs (auto-configured)
 
 3. **Add Services:**
@@ -399,7 +399,7 @@ SESSION_SECURE_COOKIE=true
 SESSION_SAME_SITE=strict
 
 # AI Service
-OPENAI_API_KEY=your_production_api_key
+GEMINI_API_KEY=your_production_api_key
 ```
 
 ### Performance Optimization

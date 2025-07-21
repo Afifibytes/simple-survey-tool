@@ -75,7 +75,7 @@ resources/
 2. **Configure Environment**
    ```bash
    # The .env file is already configured for Docker
-   # Update OPENAI_API_KEY if you want AI features
+   # Update GEMINI_API_KEY if you want AI features
    ```
 
 3. **Start Services**
@@ -202,7 +202,7 @@ docker-compose exec app php artisan test --testsuite=Feature
    - Configure production database
    - Set secure APP_KEY
    - Configure Redis for production
-   - Set OPENAI_API_KEY for AI features
+   - Set GEMINI_API_KEY for AI features
 
 3. **Optimization**
    ```bash
@@ -264,7 +264,7 @@ This project is open-source software licensed under the MIT license.
 ### Common Issues
 1. **Docker not starting**: Check Docker daemon is running
 2. **Database connection**: Verify MySQL container is healthy
-3. **AI features not working**: Check OPENAI_API_KEY configuration
+3. **AI features not working**: Check GEMINI_API_KEY configuration
 4. **Assets not loading**: Run `npm run build` and check Vite config
 
 ### Getting Help
