@@ -1,0 +1,88 @@
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-2 $spacing-4;
+    border: 1px solid transparent;
+    border-radius: $border-radius-md;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+    
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.btn-primary {
+    background-color: $primary-color;
+    color: white;
+    
+    &:hover:not(:disabled) {
+        background-color: $primary-hover;
+        text-decoration: none;
+    }
+}
+
+.btn-secondary {
+    background-color: $gray-600;
+    color: white;
+    
+    &:hover:not(:disabled) {
+        background-color: $gray-700;
+        text-decoration: none;
+    }
+}
+
+.btn-success {
+    background-color: $success-color;
+    color: white;
+    
+    &:hover:not(:disabled) {
+        background-color: darken($success-color, 10%);
+        text-decoration: none;
+    }
+}
+
+.btn-danger {
+    background-color: $error-color;
+    color: white;
+    
+    &:hover:not(:disabled) {
+        background-color: darken($error-color, 10%);
+        text-decoration: none;
+    }
+}
+
+.btn-outline {
+    background-color: white;
+    border-color: $gray-300;
+    color: $gray-700;
+    
+    &:hover:not(:disabled) {
+        background-color: $gray-50;
+        text-decoration: none;
+    }
+}
+
+.btn-sm {
+    padding: $spacing-1 $spacing-3;
+    font-size: $font-size-xs;
+}
+
+.btn-lg {
+    padding: $spacing-3 $spacing-6;
+    font-size: $font-size-base;
+}
+
+.btn-full {
+    width: 100%;
+}

@@ -1,0 +1,95 @@
+.form-group {
+    margin-bottom: $spacing-6;
+}
+
+.form-label {
+    display: block;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $gray-700;
+    margin-bottom: $spacing-2;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    display: block;
+    width: 100%;
+    padding: $spacing-3;
+    border: 1px solid $gray-300;
+    border-radius: $border-radius-md;
+    font-size: $font-size-sm;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    
+    &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+    
+    &::placeholder {
+        color: $gray-400;
+    }
+    
+    &:disabled {
+        background-color: $gray-100;
+        cursor: not-allowed;
+    }
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-checkbox,
+.form-radio {
+    width: $spacing-4;
+    height: $spacing-4;
+    color: $primary-color;
+    border: 1px solid $gray-300;
+    border-radius: $border-radius-sm;
+    
+    &:focus {
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+}
+
+.form-radio {
+    border-radius: 50%;
+}
+
+.form-error {
+    color: $error-color;
+    font-size: $font-size-xs;
+    margin-top: $spacing-1;
+}
+
+.form-help {
+    color: $gray-500;
+    font-size: $font-size-xs;
+    margin-top: $spacing-1;
+}
+
+// Form validation states
+.form-input.is-invalid,
+.form-textarea.is-invalid,
+.form-select.is-invalid {
+    border-color: $error-color;
+    
+    &:focus {
+        border-color: $error-color;
+        box-shadow: 0 0 0 3px rgba($error-color, 0.1);
+    }
+}
+
+.form-input.is-valid,
+.form-textarea.is-valid,
+.form-select.is-valid {
+    border-color: $success-color;
+    
+    &:focus {
+        border-color: $success-color;
+        box-shadow: 0 0 0 3px rgba($success-color, 0.1);
+    }
+}

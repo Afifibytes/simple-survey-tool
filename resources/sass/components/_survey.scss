@@ -1,0 +1,141 @@
+// NPS Scale Styling
+.nps-scale {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $spacing-2;
+    margin: $spacing-4 0;
+    
+    @media (max-width: $breakpoint-sm) {
+        gap: $spacing-1;
+    }
+}
+
+.nps-option {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.nps-button {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border: 2px solid $gray-300;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    background-color: white;
+    
+    @media (max-width: $breakpoint-sm) {
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        font-size: $font-size-sm;
+    }
+    
+    &:hover {
+        border-color: $primary-color;
+        background-color: rgba($primary-color, 0.05);
+        transform: scale(1.05);
+    }
+}
+
+.nps-option input:checked + .nps-button {
+    background-color: $primary-color;
+    color: white;
+    border-color: $primary-color;
+    transform: scale(1.1);
+}
+
+// Survey Form Styling
+.survey-form {
+    .question-container {
+        margin-bottom: $spacing-8;
+        
+        label {
+            display: block;
+            font-weight: 500;
+            color: $gray-700;
+            margin-bottom: $spacing-2;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: $spacing-3;
+            border: 1px solid $gray-300;
+            border-radius: $border-radius-md;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s ease;
+            
+            &:focus {
+                outline: none;
+                border-color: $primary-color;
+                box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+            }
+            
+            &::placeholder {
+                color: $gray-400;
+            }
+        }
+    }
+}
+
+// AI Follow-up Styling
+.ai-followup {
+    background-color: rgba($primary-color, 0.05);
+    border: 1px solid rgba($primary-color, 0.2);
+    border-radius: $border-radius-lg;
+    padding: $spacing-6;
+    margin-top: $spacing-6;
+    
+    h3 {
+        color: $gray-900;
+        font-weight: 600;
+        margin-bottom: $spacing-2;
+    }
+    
+    .ai-question {
+        color: $gray-700;
+        margin-bottom: $spacing-4;
+        font-style: italic;
+    }
+    
+    textarea {
+        width: 100%;
+        min-height: 80px;
+        padding: $spacing-3;
+        border: 1px solid $gray-300;
+        border-radius: $border-radius-md;
+        margin-bottom: $spacing-3;
+        
+        &:focus {
+            outline: none;
+            border-color: $primary-color;
+            box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+        }
+    }
+}
+
+// Thank you message
+.thank-you {
+    text-align: center;
+    padding: $spacing-8;
+    
+    h2 {
+        color: $success-color;
+        font-size: $font-size-2xl;
+        font-weight: 700;
+        margin-bottom: $spacing-2;
+    }
+    
+    p {
+        color: $gray-600;
+        font-size: $font-size-lg;
+    }
+}

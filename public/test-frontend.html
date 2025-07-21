@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        .log { max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>Frontend API Test - AI Resilience</h1>
+    
+    <div class="test-section info">
+        <h3>Test Instructions</h3>
+        <ol>
+            <li>Make sure your Laravel app is running at <code>http://localhost:8000</code></li>
+            <li>Ensure you have a survey with ID 1 (or update the surveyId below)</li>
+            <li>Click the test buttons below to verify API responses</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Controls</h3>
+        <button onclick="testWithoutAI()">Test Without AI Key</button>
+        <button onclick="testWithAI()">Test With AI Key</button>
+        <button onclick="testNPSOnly()">Test NPS Only</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Results</h3>
+        <div id="log" class="log">
+            <p><em>Click a test button to see results...</em></p>
+        </div>
+    </div>
+
+    <script>
+        const surveyId = 1; // Update this to match your survey ID
+        const logDiv = document.getElementById('log');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            logDiv.appendChild(div);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            logDiv.innerHTML = '<p><em>Log cleared...</em></p>';
+        }
+
+        async function getCsrfToken() {
+            try {
+                const response = await fetch(`/survey/${surveyId}`);
+                const html = await response.text();
+                const match = html.match(/name="csrf-token" content="([^"]+)"/);
+                return match ? match[1] : null;
+            } catch (error) {
+                log(`Error getting CSRF token: ${error.message}`, 'error');
+                return null;
+            }
+        }
+
+        async function testApiCall(data, testName) {
+            log(`Starting ${testName}...`, 'info');
+            
+            try {
+                const csrfToken = await getCsrfToken();
+                if (!csrfToken) {
+                    log('Failed to get CSRF token', 'error');
+                    return;
+                }
+
+                const formData = new FormData();
+                Object.keys(data).forEach(key => {
+                    if (data[key] !== null && data[key] !== undefined) {
+                        formData.append(key, data[key]);
+                    }
+                });
+
+                log(`Making API call to /survey/${surveyId}/response`, 'info');
+                
+                const response = await fetch(`/survey/${surveyId}/response`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                });
+
+                log(`HTTP Status: ${response.status} ${response.statusText}`, 
+                    response.ok ? 'success' : 'error');
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log(`Error Response: ${errorText}`, 'error');
+                    return;
+                }
+
+                const responseData = await response.json();
+                log(`Response Data: <pre>${JSON.stringify(responseData, null, 2)}</pre>`, 'success');
+
+                // Verify expected structure
+                if (responseData.success) {
+                    log('✅ Response indicates success', 'success');
+                } else {
+                    log('❌ Response indicates failure', 'error');
+                }
+
+                if (responseData.hasOwnProperty('has_follow_up')) {
+                    log(`✅ has_follow_up: ${responseData.has_follow_up}`, 'success');
+                } else {
+                    log('❌ Missing has_follow_up property', 'error');
+                }
+
+                if (responseData.response) {
+                    log('✅ Response object present', 'success');
+                } else {
+                    log('❌ Missing response object', 'error');
+                }
+
+            } catch (error) {
+                log(`❌ JavaScript Error: ${error.message}`, 'error');
+                console.error('Full error:', error);
+            }
+        }
+
+        async function testWithoutAI() {
+            log('=== Testing WITHOUT AI Key ===', 'info');
+            log('Note: Remove OPENAI_API_KEY from .env file for this test', 'info');
+            
+            await testApiCall({
+                open_text: 'This is a test response without AI key'
+            }, 'Without AI Key');
+        }
+
+        async function testWithAI() {
+            log('=== Testing WITH AI Key ===', 'info');
+            log('Note: Ensure OPENAI_API_KEY is set in .env file for this test', 'info');
+            
+            await testApiCall({
+                open_text: 'This is a test response with AI key'
+            }, 'With AI Key');
+        }
+
+        async function testNPSOnly() {
+            log('=== Testing NPS Only (No AI) ===', 'info');
+            
+            await testApiCall({
+                nps_score: 8
+            }, 'NPS Only');
+        }
+
+        // Auto-run a basic test on page load
+        window.addEventListener('load', () => {
+            log('Frontend API Test loaded. Click buttons above to test.', 'info');
+        });
+    </script>
+</body>
+</html>

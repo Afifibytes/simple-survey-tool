@@ -1,0 +1,164 @@
+.navbar {
+    background-color: white;
+    border-bottom: 1px solid $gray-200;
+    box-shadow: $shadow-sm;
+}
+
+.navbar-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 $spacing-4;
+    
+    @media (min-width: $breakpoint-sm) {
+        padding: 0 $spacing-6;
+    }
+    
+    @media (min-width: $breakpoint-lg) {
+        padding: 0 $spacing-8;
+    }
+}
+
+.navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 4rem;
+}
+
+.navbar-brand {
+    font-size: $font-size-xl;
+    font-weight: 600;
+    color: $gray-900;
+    text-decoration: none;
+    
+    &:hover {
+        color: $primary-color;
+        text-decoration: none;
+    }
+}
+
+.navbar-nav {
+    display: none;
+    align-items: center;
+    gap: $spacing-4;
+    
+    @media (min-width: $breakpoint-md) {
+        display: flex;
+    }
+}
+
+.navbar-link {
+    color: $gray-600;
+    text-decoration: none;
+    padding: $spacing-2 $spacing-3;
+    border-radius: $border-radius-md;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    &:hover {
+        color: $gray-900;
+        background-color: $gray-100;
+        text-decoration: none;
+    }
+    
+    &.active {
+        color: $gray-900;
+        background-color: $gray-100;
+    }
+}
+
+.navbar-cta {
+    background-color: $primary-color;
+    color: white;
+    padding: $spacing-2 $spacing-4;
+    border-radius: $border-radius-md;
+    text-decoration: none;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+        background-color: $primary-hover;
+        text-decoration: none;
+    }
+}
+
+.mobile-menu-button {
+    display: block;
+    color: $gray-600;
+    padding: $spacing-2;
+    border: none;
+    background: none;
+    cursor: pointer;
+    
+    @media (min-width: $breakpoint-md) {
+        display: none;
+    }
+    
+    &:hover {
+        color: $gray-900;
+    }
+    
+    svg {
+        width: $spacing-6;
+        height: $spacing-6;
+    }
+}
+
+.mobile-menu {
+    background-color: $gray-50;
+    border-top: 1px solid $gray-200;
+    
+    @media (min-width: $breakpoint-md) {
+        display: none !important;
+    }
+    
+    .mobile-nav {
+        padding: $spacing-2 $spacing-2 $spacing-3;
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-1;
+        
+        @media (min-width: $breakpoint-sm) {
+            padding: $spacing-2 $spacing-3 $spacing-3;
+        }
+    }
+    
+    .mobile-link {
+        color: $gray-600;
+        text-decoration: none;
+        padding: $spacing-3;
+        border-radius: $border-radius-md;
+        font-size: $font-size-base;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            color: $gray-900;
+            background-color: $gray-100;
+            text-decoration: none;
+        }
+        
+        &.active {
+            color: $gray-900;
+            background-color: $gray-100;
+        }
+    }
+    
+    .mobile-cta {
+        background-color: $primary-color;
+        color: white;
+        padding: $spacing-3;
+        border-radius: $border-radius-md;
+        text-decoration: none;
+        font-size: $font-size-base;
+        font-weight: 500;
+        text-align: center;
+        
+        &:hover {
+            background-color: $primary-hover;
+            text-decoration: none;
+        }
+    }
+}

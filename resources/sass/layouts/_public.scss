@@ -1,0 +1,134 @@
+.public-layout {
+    min-height: 100vh;
+    background-color: $gray-50;
+}
+
+.survey-container {
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: $spacing-6 $spacing-4;
+    
+    @media (min-width: $breakpoint-sm) {
+        padding: $spacing-8 $spacing-6;
+    }
+}
+
+.survey-card {
+    background-color: white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
+    padding: $spacing-6;
+    
+    @media (min-width: $breakpoint-sm) {
+        padding: $spacing-8;
+    }
+}
+
+.survey-title {
+    font-size: $font-size-2xl;
+    font-weight: 700;
+    color: $gray-900;
+    margin-bottom: $spacing-4;
+    text-align: center;
+    
+    @media (min-width: $breakpoint-sm) {
+        text-align: left;
+    }
+}
+
+.survey-description {
+    color: $gray-600;
+    margin-bottom: $spacing-6;
+    line-height: 1.6;
+    text-align: center;
+    
+    @media (min-width: $breakpoint-sm) {
+        text-align: left;
+    }
+}
+
+.question-container {
+    margin-bottom: $spacing-8;
+    
+    &:last-child {
+        margin-bottom: $spacing-6;
+    }
+    
+    .question-label {
+        display: block;
+        font-size: $font-size-sm;
+        font-weight: 500;
+        color: $gray-700;
+        margin-bottom: $spacing-2;
+    }
+}
+
+.survey-submit {
+    width: 100%;
+    background-color: $primary-color;
+    color: white;
+    padding: $spacing-3 $spacing-4;
+    border: none;
+    border-radius: $border-radius-md;
+    font-size: $font-size-base;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    
+    &:hover:not(:disabled) {
+        background-color: $primary-hover;
+    }
+    
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+    
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.completion-message {
+    text-align: center;
+    padding: $spacing-8;
+    
+    .completion-icon {
+        width: 4rem;
+        height: 4rem;
+        color: $success-color;
+        margin: 0 auto $spacing-6;
+    }
+    
+    h2 {
+        font-size: $font-size-3xl;
+        font-weight: 700;
+        color: $gray-900;
+        margin-bottom: $spacing-4;
+    }
+    
+    p {
+        font-size: $font-size-lg;
+        color: $gray-600;
+        margin-bottom: $spacing-8;
+    }
+    
+    .next-steps {
+        background-color: $gray-50;
+        border-radius: $border-radius-lg;
+        padding: $spacing-6;
+        
+        h3 {
+            font-size: $font-size-lg;
+            font-weight: 600;
+            color: $gray-900;
+            margin-bottom: $spacing-2;
+        }
+        
+        p {
+            color: $gray-600;
+            margin: 0;
+        }
+    }
+}

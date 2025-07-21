@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      target: development
+    container_name: survey_app
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/app
+    environment:
+      - WEB_DOCUMENT_ROOT=/app/public
+      - PHP_DISPLAY_ERRORS=1
+      - PHP_MEMORY_LIMIT=256M
+      - PHP_MAX_EXECUTION_TIME=300
+    networks:
+      - survey_network
+    depends_on:
+      - database
+      - redis
+
+  database:
+    image: mysql:8.0
+    container_name: survey_database
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: survey_tool
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_PASSWORD: secret
+      MYSQL_USER: survey_user
+    volumes:
+      - survey_db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - survey_network
+
+  redis:
+    image: redis:alpine
+    container_name: survey_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - survey_network
+
+volumes:
+  survey_db_data:
+
+networks:
+  survey_network:
+    driver: bridge
