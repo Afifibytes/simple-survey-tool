@@ -49,7 +49,7 @@ COPY . /app
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 # Install Node dependencies and build assets
-RUN npm ci --only=production && npm run build
+RUN npm ci --only=production
 
 # Remove Node.js to reduce image size
 RUN apk del nodejs npm
