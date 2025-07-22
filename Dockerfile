@@ -14,7 +14,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+RUN npm ci && npm run build
+
 
 # Development stage
 FROM base AS development
@@ -49,7 +50,7 @@ COPY . /app
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 # Install Node dependencies and build assets
-RUN npm ci --only=production
+RUN rm -rf node_modules && npm ci --only=production
 
 # Remove Node.js to reduce image size
 RUN apk del nodejs npm
