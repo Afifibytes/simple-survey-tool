@@ -57,8 +57,8 @@ RUN apk del nodejs npm
 
 # Set proper permissions
 RUN chown -R application:application /app \
-    && chmod -R 755 /app/storage \
-    && chmod -R 755 /app/bootstrap/cache
+    && [ -d /app/storage ] && chmod -R 755 /app/storage || true \
+    && [ -d /app/bootstrap/cache ] && chmod -R 755 /app/bootstrap/cache || true
 
 # Expose port
 EXPOSE 80
